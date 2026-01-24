@@ -18,11 +18,11 @@ exports.loginAdmin = async (req, res) => {
     const token = jwt.sign(
       { id: admin._id, role: admin.role },
       process.env.ACCESS_TOKEN_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "1d" },
     );
 
     res.json({
-      sucess: true,
+      success: true,
       token,
       admin: {
         id: admin._id,

@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Admin",
+    required: true,
+  },
   courseName: {
     type: String,
     required: true,
@@ -25,10 +30,8 @@ const courseSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  isActive: { type: Boolean, default: true },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Course", courseSchema);

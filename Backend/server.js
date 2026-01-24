@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoutes.js");
 const adminDashboardRoutes = require("./routes/adminDashboardRoutes.js");
+const courseRoutes = require("./routes/courseRoutes.js");
 
 dotenv.config();
 
@@ -26,6 +27,9 @@ app.use("/api/admin/auth", authRoutes);
 // ADMIN DASHBOARD ROUTES
 app.use("/api/admin/dashboard", adminDashboardRoutes);
 
+app.use("/api/admin/coursemanagement", courseRoutes);
+
+app.use("/api", require("./routes/chatRoutes"));
 
 // Port is listening
 app.listen(process.env.PORT, () => {
