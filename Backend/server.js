@@ -4,11 +4,26 @@ const authRoutes = require("./routes/authRoutes");
 const adminDashboardRoutes = require("./routes/adminDashboardRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const institutionRoutes = require("./routes/institutionRoutes");
+
+const cors = require("cors");
+
+
+
+
 const connectDB = require("./config/Db");
 
 dotenv.config();
 
 const app = express();
+
+//cors configuration
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 // Middleware
 app.use(express.json());
@@ -24,6 +39,9 @@ app.use("/api/admin/auth", authRoutes);
 app.use("/api/admin/dashboard", adminDashboardRoutes);
 app.use("/api/admin/courses", courseRoutes);
 app.use("/api", chatRoutes);
+
+app.use("/api/institution", institutionRoutes);
+
 
 // Global error handler
 app.use((err, req, res, next) => {

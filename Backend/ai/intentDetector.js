@@ -6,7 +6,23 @@ Return ONLY valid JSON.
 No explanation. No markdown. No extra text.
 
 Allowed intents:
-fees, eligibility, duration, deadline, course, admission, unknown
+fees,
+eligibility,
+duration,
+deadline,
+course,
+admission,
+
+college_name,
+college_timing,
+shifts,
+contact,
+email,
+address,
+location,
+website,
+
+unknown
 
 Allowed subIntents:
 - fees: perYear, perSemester, total
@@ -18,7 +34,8 @@ Rules:
 - If total or full course fees are asked, use subIntent "total"
 - If nothing specific is mentioned for fees, use subIntent "perYear"
 - If semesters are mentioned, use subIntent "semesters"
-- If no course is mentioned, return an empty array
+- Institution-level intents do NOT require courseNames
+- If no course is mentioned for course-related intents, return an empty array
 - Course names must be strings exactly as mentioned by the user
 
 JSON format:
@@ -35,7 +52,7 @@ User Question:
   const raw = await callOpenRouter({
     prompt,
     temperature: 0,
-    max_tokens: 120,
+    max_tokens: 150,
     systemMessage:
       "You are a strict intent classification engine. Output JSON only.",
   });
@@ -52,7 +69,7 @@ User Question:
 
   try {
     return JSON.parse(jsonText);
-  } catch (error) {
+  } catch {
     return {
       intent: "unknown",
       subIntent: null,

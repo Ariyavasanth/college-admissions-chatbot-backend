@@ -1,4 +1,5 @@
 const Course = require("../model/Course");
+const Institution = require("../model/Institution");
 const detectIntent = require("../ai/intentDetector");
 const generateResponse = require("../ai/responseGenerator");
 
@@ -11,7 +12,9 @@ exports.chat = async (req, res) => {
     /* ======================================================
        1️⃣ Validate Input
     ====================================================== */
-    if (!message || message.trim() === "") {
+    const userMessage = message?.trim();
+
+    if (!userMessage) {
       return res.json({ reply: "Please enter a valid question." });
     }
 
@@ -23,6 +26,17 @@ exports.chat = async (req, res) => {
     console.log("Intent:", intent);
     console.log("SubIntent:", subIntent);
     console.log("Courses:", courseNames);
+
+    const institutionIntents = [
+      "college_name",
+      "college_timing",
+      "shifts",
+      "contact",
+      "email",
+      "address",
+      "location",
+      "website",
+    ];
 
     /* ======================================================
        3️⃣ Unknown / Unsupported Queries
@@ -42,6 +56,63 @@ exports.chat = async (req, res) => {
         reply:
           "For admission-related queries, please contact the college admission office directly.",
       });
+    }
+
+    /* ======================================================
+   🏛 Institution-Level Queries (NO AI)
+====================================================== */
+    if (institutionIntents.includes(intent)) {
+      const institution = await Institution.findOne();
+
+      if (!institution) {
+        return res.json({
+          reply:
+            "Institution details are not available at the moment. Please contact the college office.",
+        });
+      }
+
+      let reply = "";
+
+      switch (intent) {
+        case "college_name":
+          reply = institution.institutionName;
+          break;
+
+        case "college_timing":
+          reply =
+            institution.timings?.general ||
+            `Morning: ${institution.timings?.morningShift || "N/A"}
+Evening: ${institution.timings?.eveningShift || "N/A"}`;
+          break;
+
+        case "shifts":
+          reply = `Total Shifts: ${institution.totalShifts ?? "Not specified"}`;
+          break;
+
+        case "contact":
+          reply = `Phone: ${institution.contactDetails?.phoneNumbers?.join(", ") || "N/A"}
+Email: ${institution.contactDetails?.emailAddresses?.join(", ") || "N/A"}`;
+          break;
+
+        case "email":
+          reply =
+            institution.contactDetails?.emailAddresses?.join(", ") ||
+            "Not available";
+          break;
+
+        case "address":
+        case "location":
+          reply =
+            institution.contactDetails?.address || "Address not available";
+          break;
+
+        case "website":
+          reply =
+            institution.contactDetails?.website || "Website not available";
+          break;
+      }
+
+      return res.json({ reply });
     }
 
     /* ======================================================
